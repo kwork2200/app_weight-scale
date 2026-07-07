@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:gap/gap.dart';
+import 'Face scan button and setup.dart';
 import 'camera_scan_screen.dart';
 import 'history_screen.dart';
 import '../models/weight_database.dart';
@@ -65,6 +66,8 @@ class HomeScreen extends StatelessWidget {
                 _ScanButton().animate().fadeIn(delay: 100.ms).slideY(begin: 0.2),
                 const Gap(28),
                 _AccuracyCard().animate().fadeIn(delay: 200.ms),
+                const Gap(28),
+                FaceScanButton(),
                 const Gap(28),
                 Text(
                   'Supported Objects',
@@ -159,7 +162,7 @@ class _ScanButton extends StatelessWidget {
                   ),
                   const Text(
                     'Scan object using camera',
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),

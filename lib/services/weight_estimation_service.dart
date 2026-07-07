@@ -19,11 +19,6 @@ class WeightEstimationService {
 
   /// Log helper that works in both debug and release builds
   static void _log(String message) {
-    // In release builds, print() still works and can be captured
-    // Also use stderr for critical errors
-    print(message);
-    
-    // For critical errors, also write to stderr
     if (message.contains('❌') || message.contains('ERROR')) {
       stderr.writeln(message);
     }
@@ -42,11 +37,7 @@ class WeightEstimationService {
       return;
     }
 
-    final models = [
-      'gemini-2.5-flash-lite',
-      'gemini-2.5-flash',
-      'gemini-2.5-pro',
-    ];
+    final models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.5-pro',];
 
     for (final model in models) {
       try {
@@ -54,7 +45,6 @@ class WeightEstimationService {
         final testModel = GenerativeModel(model: model, apiKey: key);
         await testModel.generateContent([Content.text('hi')]);
         _geminiModel = testModel;
-        _log('✅ Gemini initialized with model: $model');
         return;
       } catch (e) {
         _log('⚠️ Model $model failed: $e');
@@ -87,7 +77,6 @@ class WeightEstimationService {
     return await _estimateWithTraditionalML(imagePath);
   }
 
-  // Timeout for API calls (30 seconds)
   static const Duration _apiTimeout = Duration(seconds: 30);
 
   Future<WeightEstimationResult?> _estimateWithGeminiAI(String imagePath) async {

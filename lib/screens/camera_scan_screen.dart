@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:gap/gap.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../services/face_detection_service.dart';
 import '../services/weight_estimation_service.dart';
 import '../services/history_service.dart';
 import 'result_screen.dart';
@@ -28,6 +29,7 @@ class _CameraScanScreenState extends State<CameraScanScreen>
   String _statusMessage = 'Object ko center mein rakho • Coin saath rakho accuracy ke liye';
   late AnimationController _pulseController;
   final _service = WeightEstimationService();
+  final _faceService = FaceDetectionService();
 
   // Timeout durations
   static const Duration _cameraInitTimeout = Duration(seconds: 10);
@@ -132,6 +134,7 @@ class _CameraScanScreenState extends State<CameraScanScreen>
     WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
     _pulseController.dispose();
+    _faceService.dispose();
     super.dispose();
   }
 
@@ -165,6 +168,13 @@ class _CameraScanScreenState extends State<CameraScanScreen>
 
       setState(() {
         _scanState = ScanState.processing;
+        _statusMessage = '🔍 Object detect kar raha hai...';
+      });
+
+      // Skip face detection for object scanning
+      debugPrint('✅ Object capture successful');
+
+      setState(() {
         _statusMessage = '🧠 Pixel analysis + ML running...';
       });
 
@@ -183,7 +193,7 @@ class _CameraScanScreenState extends State<CameraScanScreen>
       } else {
         setState(() {
           _scanState = ScanState.idle;
-          _statusMessage = '❌ Object detect nahi hua. Dobara try karo.';
+          _statusMessage = ' Object detect nahi hua. Dobara try karo.';
         });
         await Future.delayed(const Duration(seconds: 2));
         setState(() {
