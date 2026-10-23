@@ -9,6 +9,17 @@
         android:label="Weight Scale"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- Google Mobile Ads App ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
+
+        <!-- Facebook Audience Network App ID -->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="fb3923741507933211"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

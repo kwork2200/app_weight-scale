@@ -4,7 +4,11 @@ import 'package:gap/gap.dart';
 import 'Face scan button and setup.dart';
 import 'camera_scan_screen.dart';
 import 'history_screen.dart';
+import '../ads/hybrid_banner_ad_widget.dart';
+import '../ads/hybrid_native_ad_widget.dart';
 import '../models/weight_database.dart';
+import '../utils/functions.dart';
+import '../widgets/app_drawer.dart';
 import '../widgets/category_chip.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -23,6 +27,8 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A0E1A),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const SafeArea(top: false, child: HybridBannerAdWidget()),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -51,10 +57,8 @@ class HomeScreen extends StatelessWidget {
             actions: [
               IconButton(
                 icon: const Icon(Icons.history, color: Colors.white70),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const HistoryScreen()),
-                ),
+                onPressed: () =>
+                    showInterstitialThenNavigate(context, const HistoryScreen()),
               ),
             ],
           ),
@@ -66,7 +70,9 @@ class HomeScreen extends StatelessWidget {
                 _ScanButton().animate().fadeIn(delay: 100.ms).slideY(begin: 0.2),
                 const Gap(28),
                 _AccuracyCard().animate().fadeIn(delay: 200.ms),
-                const Gap(28),
+                const Gap(10),
+                const HybridNativeAdWidget(),
+                const Gap(15),
                 FaceScanButton(),
                 const Gap(28),
                 Text(
@@ -84,9 +90,11 @@ class HomeScreen extends StatelessWidget {
                       .map((e) => CategoryChip(label: e.key, category: e.value))
                       .toList(),
                 ).animate().fadeIn(delay: 400.ms),
-                const Gap(28),
+                const Gap(10),
+                const HybridNativeAdWidget(),
+                const Gap(20),
                 _HowToUseCard().animate().fadeIn(delay: 500.ms),
-                const Gap(24),
+                const Gap(18),
               ]),
             ),
           ),
@@ -100,10 +108,8 @@ class _ScanButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const CameraScanScreen()),
-      ),
+      onTap: () =>
+          showInterstitialThenNavigate(context, const CameraScanScreen()),
       child: Container(
         height: 180,
         decoration: BoxDecoration(

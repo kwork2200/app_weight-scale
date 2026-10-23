@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'Face scan camera screen.dart';
+import '../utils/functions.dart';
 
 /// Drop this widget into your HomeScreen's SliverList
 /// right below _ScanButton()
@@ -11,10 +12,8 @@ class FaceScanButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const FaceScanCameraScreen()),
-      ),
+      onTap: () =>
+          showInterstitialThenNavigate(context, const FaceScanCameraScreen()),
       child: Container(
         height: 120,
         decoration: BoxDecoration(

@@ -24,3 +24,9 @@
 -keep class org.tensorflow.lite.gpu.GpuDelegateFactory$Options$GpuBackend { *; }
 -dontwarn org.tensorflow.lite.gpu.**
 -dontwarn org.tensorflow.**
+
+# ═══════════════════════════════════════════════════════════════
+# Facebook Audience Network SDK
+# infer-annotations are compileOnly deps, not needed at runtime
+# ═══════════════════════════════════════════════════════════════
+-dontwarn com.facebook.infer.annotation.**

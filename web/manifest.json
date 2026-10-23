@@ -1,6 +1,6 @@
 {
-    "name": "app_weight_scale",
-    "short_name": "app_weight_scale",
+    "name": "Weight Scale",
+    "short_name": "Weight Scale",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

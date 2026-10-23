@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "700377261447",
+    "project_id": "pdf-viewer-bf49e",
+    "storage_bucket": "pdf-viewer-bf49e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:700377261447:android:3708783dc99a1e474e9f22",
+        "android_client_info": {
+          "package_name": "com.weight_scale"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApeTnaTFpr97dnARj_jWfpdpzZpC6B9r8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

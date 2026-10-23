@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../ads/app_open_ad_manager.dart';
+import '../services/remote_config_service.dart';
 import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -19,10 +21,39 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _initApp() async {
     await Future.delayed(const Duration(seconds: 2));
     await _requestPermissions();
-    if (mounted) {
+    if (!mounted) return;
+    await _showAppOpenAdThenGoHome();
+  }
+
+  Future<void> _showAppOpenAdThenGoHome() async {
+    bool navigated = false;
+
+    void goHome() {
+      if (navigated || !mounted) return;
+      navigated = true;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
+    }
+
+    if (!RemoteConfigService.instance.showOpenAds) {
+      goHome();
+      return;
+    }
+
+    final manager = AppOpenAdManager.instance;
+    final deadline = DateTime.now().add(const Duration(seconds: 5));
+    while (!manager.isAdAvailable && DateTime.now().isBefore(deadline)) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      if (!mounted) return;
+    }
+
+    if (!mounted) return;
+
+    if (manager.isAdAvailable) {
+      manager.showAdIfAvailable(onAdDismissed: goHome);
+    } else {
+      goHome();
     }
   }
 

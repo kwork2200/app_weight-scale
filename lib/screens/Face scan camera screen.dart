@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'Face weight estimation service.dart';
 import 'Face weight result screen.dart';
+import '../utils/functions.dart';
 
 enum FaceScanState { idle, detecting, analyzing, done, error, noFace }
 
@@ -33,6 +34,14 @@ class _FaceScanCameraScreenState extends State<FaceScanCameraScreen>
 
   late AnimationController _pulseController;
   final _service = FaceWeightEstimationService();
+  bool _leaving = false;
+
+  Future<void> _handleBack() async {
+    if (_leaving) return;
+    _leaving = true;
+    await showInterstitialThenPop(context);
+    if (mounted) _leaving = false;
+  }
 
   // For live face detection on stream
   bool _isProcessingFrame = false;
@@ -235,7 +244,13 @@ class _FaceScanCameraScreenState extends State<FaceScanCameraScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _handleBack();
+      },
+      child: Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         fit: StackFit.expand,
@@ -275,7 +290,7 @@ class _FaceScanCameraScreenState extends State<FaceScanCameraScreen>
                   children: [
                     _GlassBtn(
                       icon: Icons.arrow_back_ios_new,
-                      onTap: () => Navigator.pop(context),
+                      onTap: _handleBack,
                     ),
                     const Spacer(),
                     Container(
@@ -439,6 +454,7 @@ class _FaceScanCameraScreenState extends State<FaceScanCameraScreen>
             ),
           ),
         ],
+      ),
       ),
     );
   }

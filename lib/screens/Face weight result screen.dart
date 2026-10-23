@@ -5,6 +5,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:gap/gap.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
+import '../ads/hybrid_banner_ad_widget.dart';
+import '../ads/hybrid_native_ad_widget.dart';
+import '../utils/functions.dart';
 import 'Face scan camera screen.dart';
 import 'face_weight_estimation_result.dart';
 
@@ -14,8 +17,15 @@ class FaceWeightResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        showInterstitialThenPop(context, popToFirst: true);
+      },
+      child: Scaffold(
       backgroundColor: const Color(0xFF0A0E1A),
+      bottomNavigationBar: const SafeArea(top: false, child: HybridBannerAdWidget()),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -23,7 +33,8 @@ class FaceWeightResultScreen extends StatelessWidget {
             pinned: true,
             leading: IconButton(
               icon: const Icon(Icons.close, color: Colors.white),
-              onPressed: () => Navigator.of(context).popUntil((r) => r.isFirst),
+              onPressed: () =>
+                  showInterstitialThenPop(context, popToFirst: true),
             ),
             title: Row(
               children: [
@@ -54,7 +65,10 @@ class FaceWeightResultScreen extends StatelessWidget {
                     child: Image.file(File(result.imagePath), fit: BoxFit.cover),
                   ),
                 ).animate().fadeIn(duration: 400.ms),
-                const Gap(20),
+                const Gap(10),
+
+                const HybridNativeAdWidget(),
+                const Gap(16),
 
                 // ── Weight Card ───────────────────────────────────────────
                 _WeightCard(result: result).animate().fadeIn(delay: 100.ms),
@@ -71,9 +85,11 @@ class FaceWeightResultScreen extends StatelessWidget {
 
                 // ── Confidence + Body Type ────────────────────────────────
                 _ConfidenceCard(result: result).animate().fadeIn(delay: 300.ms),
-                const Gap(16),
+                const Gap(10),
 
                 // ── Details Grid ──────────────────────────────────────────
+                const HybridNativeAdWidget(),
+                const Gap(16),
                 _DetailsCard(result: result).animate().fadeIn(delay: 400.ms),
                 const Gap(16),
 
@@ -83,6 +99,8 @@ class FaceWeightResultScreen extends StatelessWidget {
                 const Gap(16),
 
                 // ── Disclaimer ────────────────────────────────────────────
+                const HybridNativeAdWidget(),
+                const Gap(16),
                 _DisclaimerCard().animate().fadeIn(delay: 600.ms),
                 const Gap(24),
 
@@ -111,6 +129,7 @@ class FaceWeightResultScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

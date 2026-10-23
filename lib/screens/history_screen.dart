@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:gap/gap.dart';
+import '../ads/hybrid_banner_ad_widget.dart';
+import '../ads/hybrid_native_ad_widget.dart';
 import '../services/history_service.dart';
+import '../utils/functions.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -12,11 +15,20 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   List<Map<String, dynamic>> _history = [];
   bool _loading = true;
+  bool _leaving = false;
 
   @override
   void initState() {
     super.initState();
     _loadHistory();
+  }
+
+  /// Back jaane se pehle interstitial ad dikhata hai, phir screen pop karta hai.
+  Future<void> _handleBack() async {
+    if (_leaving) return;
+    _leaving = true;
+    await showInterstitialThenPop(context);
+    if (mounted) _leaving = false;
   }
 
   Future<void> _loadHistory() async {
@@ -34,15 +46,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _handleBack();
+      },
+      child: Scaffold(
       backgroundColor: const Color(0xFF0A0E1A),
+      bottomNavigationBar: const SafeArea(top: false, child: HybridBannerAdWidget()),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A0E1A),
         title: const Text('Scan History',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: _handleBack,
         ),
         actions: [
           if (_history.isNotEmpty)
@@ -75,9 +94,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 )
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: _history.length,
+                  itemCount: _history.length + _history.length ~/ 2,
                   itemBuilder: (ctx, i) {
-                    final item = _history[i];
+                    // Har 2 items ke baad ad (list me 2+ items hone par)
+                    if ((i + 1) % 3 == 0) {
+                      return const Padding(
+                        padding: EdgeInsets.only(bottom: 12),
+                        child: HybridNativeAdWidget(),
+                      );
+                    }
+
+                    final index = i - i ~/ 3;
+                    final item = _history[index];
                     final grams = (item['estimatedWeightGrams'] as num).toDouble();
                     final conf = (item['confidenceScore'] as num).toDouble();
                     final dt = DateTime.tryParse(item['timestamp'] ?? '');
@@ -147,9 +175,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ),
                         ],
                       ),
-                    ).animate().fadeIn(delay: (i * 50).ms).slideX(begin: 0.1);
+                    ).animate().fadeIn(delay: (index * 50).ms).slideX(begin: 0.1);
                   },
                 ),
+      ),
     );
   }
 }

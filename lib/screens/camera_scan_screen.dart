@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../services/face_detection_service.dart';
 import '../services/weight_estimation_service.dart';
 import '../services/history_service.dart';
+import '../utils/functions.dart';
 import 'result_screen.dart';
 
 enum ScanState { idle, scanning, processing, done, error }
@@ -30,6 +31,14 @@ class _CameraScanScreenState extends State<CameraScanScreen>
   late AnimationController _pulseController;
   final _service = WeightEstimationService();
   final _faceService = FaceDetectionService();
+  bool _leaving = false;
+
+  Future<void> _handleBack() async {
+    if (_leaving) return;
+    _leaving = true;
+    await showInterstitialThenPop(context);
+    if (mounted) _leaving = false;
+  }
 
   // Timeout durations
   static const Duration _cameraInitTimeout = Duration(seconds: 10);
@@ -210,7 +219,13 @@ class _CameraScanScreenState extends State<CameraScanScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _handleBack();
+      },
+      child: Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         fit: StackFit.expand,
@@ -312,7 +327,7 @@ class _CameraScanScreenState extends State<CameraScanScreen>
                   children: [
                     _GlassButton(
                       icon: Icons.arrow_back_ios_new,
-                      onTap: () => Navigator.pop(context),
+                      onTap: _handleBack,
                     ),
                     const Spacer(),
                     _GlassButton(
@@ -441,6 +456,7 @@ class _CameraScanScreenState extends State<CameraScanScreen>
             ),
           ),
         ],
+      ),
       ),
     );
   }

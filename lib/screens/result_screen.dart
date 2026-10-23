@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:gap/gap.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import '../ads/hybrid_banner_ad_widget.dart';
+import '../ads/hybrid_native_ad_widget.dart';
 import '../models/estimation_result.dart';
+import '../utils/functions.dart';
 import '../widgets/weight_gauge.dart';
 import 'camera_scan_screen.dart';
 
@@ -13,16 +16,23 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        showInterstitialThenPop(context, popToFirst: true);
+      },
+      child: Scaffold(
       backgroundColor: const Color(0xFF0A0E1A),
+      bottomNavigationBar: const SafeArea(top: false, child: HybridBannerAdWidget()),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             backgroundColor: const Color(0xFF0A0E1A),
             leading: IconButton(
               icon: const Icon(Icons.close, color: Colors.white),
-              onPressed: () => Navigator.of(context)
-                  .popUntil((r) => r.isFirst),
+              onPressed: () =>
+                  showInterstitialThenPop(context, popToFirst: true),
             ),
             title: const Text('Scan Result',
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
@@ -52,6 +62,10 @@ class ResultScreen extends StatelessWidget {
                 const Gap(16),
 
                 // Weight Display
+                const HybridNativeAdWidget(),
+
+                const Gap(16),
+
                 _WeightCard(result: result).animate().fadeIn(delay: 200.ms),
 
                 const Gap(16),
@@ -62,6 +76,10 @@ class ResultScreen extends StatelessWidget {
                 const Gap(16),
 
                 // Details
+                const HybridNativeAdWidget(),
+
+                const Gap(16),
+
                 _DetailsCard(result: result).animate().fadeIn(delay: 400.ms),
 
                 const Gap(16),
@@ -82,6 +100,7 @@ class ResultScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
